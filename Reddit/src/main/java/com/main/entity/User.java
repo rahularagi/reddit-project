@@ -1,68 +1,62 @@
 package com.main.entity;
 
 import jakarta.persistence.*;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_tbl")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int userId;
-    private String userName;
-    private String userEmail;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name="username")
+    private String username;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name="gender")
+    private String gender;
+
+    @Column(name = "password")
     private String password;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Post>  postList;
-    @ManyToOne
-    @JoinColumn(name = "community_id")
-    private Community community;
-    public int getUserId() {
-        return userId;
-    }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+    @Column(name = "display_name")
+    private String displayName;
 
-    public String getUserName() {
-        return userName;
-    }
+    @Column(name = "karma_value")
+    private Long karma;
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+    @OneToMany(mappedBy = "ownerId",cascade = CascadeType.ALL)
+    private Set<Community> ownedCommunities;
 
-    public String getUserEmail() {
-        return userEmail;
-    }
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private Set<Post> userPosts;
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
+    @ManyToMany(mappedBy = "communityMembers")
+    private Set<Community> communityMembers;
 
-    public String getPassword() {
-        return password;
-    }
+    @ManyToMany(mappedBy = "communityModerators")
+    private Set<Community> communityModerators;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @OneToMany(mappedBy = "user")
+    private Set<Vote> userVotes;
 
-    public List<Post> getPostList() {
-        return postList;
-    }
+    @OneToMany(mappedBy = "user")
+    private List<Comment> userComments;
 
-    public void setPostList(List<Post> postList) {
-        this.postList = postList;
-    }
+    @OneToMany(mappedBy = "user")
+    private List<Reply> userReplies;
 
-    public Community getCommunity() {
-        return community;
-    }
-
-    public void setCommunity(Community community) {
-        this.community = community;
-    }
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private ProfilePhoto profilePhoto;
 }

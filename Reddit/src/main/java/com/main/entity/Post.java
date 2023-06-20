@@ -1,61 +1,61 @@
 package com.main.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-@Entity
-@Table(name = "post_tbl")
-public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int postId;
-    private String postTitle;
-    private String postContent;
-    private boolean isPostPublished;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-    private boolean isCommunity;
-    public int getPostId() {
-        return postId;
-    }
-    public void setPostId(int postId) {
-        this.postId = postId;
-    }
-    public String getPostTitle() {
-        return postTitle;
-    }
-    public void setPostTitle(String postTitle) {
-        this.postTitle = postTitle;
-    }
-    public String getPostContent() {
-        return postContent;
-    }
+import java.sql.Timestamp;
+import java.util.List;
 
-    public void setPostContent(String postContent) {
-        this.postContent = postContent;
-    }
 
-    public boolean isPostPublished() {
-        return isPostPublished;
-    }
+    @Entity
+    @Table(name = "post_tbl")
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public class Post {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "post_id")
+        private Long postId;
 
-    public void setPostPublished(boolean postPublished) {
-        isPostPublished = postPublished;
-    }
+        @Column(name = "title")
+        private String title;
 
-    public User getUser() {
-        return user;
-    }
+        @Column(name = "content")
+        private String content;
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+        @Column(name = "is_published")
+        private Boolean isPublished;
 
-    public boolean isCommunity() {
-        return isCommunity;
-    }
+        @Column(name = "published_at")
+        @CreationTimestamp
+        private Timestamp publishedAt;
 
-    public void setCommunity(boolean community) {
-        isCommunity = community;
+        @Column(name = "updated_at")
+        @UpdateTimestamp
+        private Timestamp updatedAt;
+
+        @Column(name = "is_community")
+        private Boolean isCommunity;
+
+        @ManyToOne(targetEntity = Community.class)
+        @JoinColumn(name ="community_id")
+        private Community community;
+
+        @ManyToOne(targetEntity = User.class)
+        @JoinColumn(name = "user_id")
+        private User user;
+
+        @OneToMany(mappedBy = "post")
+        private List<Comment> comments;
+
+        @OneToMany(mappedBy = "post")
+        private List<Reply> replies;
+
+        @OneToMany(mappedBy = "post")
+        private List<Vote> postVotes;
     }
-}

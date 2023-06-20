@@ -1,21 +1,68 @@
 package com.main.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "community_tbl")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Community {
-    private int communityId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "community_id")
+    private Long communityId;
+
+    @Column(name = "community_name")
     private String communityName;
-    private int owner;
-    private String aboutCommunity;
-    private String privacy;
-    private String topic;
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
-    private List<User> peopleList;
-    //private List<User> moderators;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    @Column(name="members")
+    private Integer members;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User ownerId;
+
+    @Column(name = "about")
+    private String about;
+
+    @Column(name = "wiki")
+    private String wiki;
+
+    @Column(name = "is_private")
+    private Boolean isPrivate;
+
+    @Column(name = "is_restrict")
+    private Boolean isRestrict;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "community_members",
+            joinColumns = @JoinColumn(name = "community_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<User> communityMembers;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "community_moderators",
+            joinColumns = @JoinColumn(name = "community_id"),
+            inverseJoinColumns = @JoinColumn(name = "moderator_id")
+    )
+    private Set<User> communityModerators;
+
+    @ManyToMany(mappedBy = "communities")
+    private List<Categories> categories;
 }
